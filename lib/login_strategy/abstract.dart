@@ -1,0 +1,3 @@
+class GOInitialLoginRequestedEvent {
+  const GOInitialLoginRequestedEvent();
+}

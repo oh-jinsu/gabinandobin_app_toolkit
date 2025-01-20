@@ -1,0 +1,3 @@
+class GOAppReadyEvent {
+  const GOAppReadyEvent();
+}
