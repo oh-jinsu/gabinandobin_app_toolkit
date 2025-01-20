@@ -1,56 +1,51 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gabinandobin_app_toolkit/channel.dart';
 import 'package:gabinandobin_app_toolkit/provider.dart';
 import 'package:provider/provider.dart';
 
-abstract class GOController extends ChangeNotifier {
-  void init() {}
+abstract class GOController extends ChangeNotifier implements GOSubscriber {
+  final List<StreamSubscription> _subscriptions = [];
 
+  @protected
+  @mustCallSuper
+  void init() {
+    _subscriptions.add(GO.channel.stream.listen(onListen));
+  }
+
+  @protected
+  @override
   void onListen(dynamic event) {}
+
+  @override
+  void dispose() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+
+    super.dispose();
+  }
 }
 
-class GOControllerProvider<T extends GOController> extends StatefulWidget {
+class GOControllerProvider<T extends GOController> extends ChangeNotifierProvider<T> {
   final T controller;
 
   final Widget? child;
 
-  const GOControllerProvider({super.key, required this.controller, this.child});
+  GOControllerProvider({
+    super.key,
+    required this.controller,
+    this.child,
+  }) : super(
+          lazy: false,
+          create: (_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              controller.init();
+            });
 
-  @override
-  State<GOControllerProvider<T>> createState() => _GOControllerProviderState<T>();
-}
-
-class _GOControllerProviderState<T extends GOController> extends State<GOControllerProvider<T>> {
-  StreamSubscription? subscription;
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.controller.init();
-    });
-
-    super.initState();
-
-    subscription = GO.channel.stream.listen(onData);
-  }
-
-  void onData(dynamic event) {
-    widget.controller.onListen(event);
-  }
-
-  @override
-  void dispose() {
-    subscription?.cancel();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<T>(
-      create: (c) => widget.controller,
-      child: widget.child,
-    );
-  }
+            return controller;
+          },
+          child: child,
+        );
 }

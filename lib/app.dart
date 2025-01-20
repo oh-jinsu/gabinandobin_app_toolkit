@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:gabinandobin_app_toolkit/api.dart';
+import 'package:gabinandobin_app_toolkit/auth_api.dart';
 import 'package:gabinandobin_app_toolkit/channel.dart';
 import 'package:gabinandobin_app_toolkit/concretes/channel.dart';
 import 'package:gabinandobin_app_toolkit/concretes/navigator.dart';
@@ -12,6 +13,7 @@ import 'package:gabinandobin_app_toolkit/navigator.dart';
 import 'package:gabinandobin_app_toolkit/storage.dart';
 import 'package:gabinandobin_app_toolkit/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 
 class GOApp extends StatefulWidget {
   final bool debugMode;
@@ -28,20 +30,23 @@ class GOApp extends StatefulWidget {
 
   final ThemeData theme;
 
-  final GOAPI api;
+  final GOAPI? api;
 
   final GOAuthAPI? authApi;
 
   final List<GOSubscriber> subscribers;
 
+  final List<SingleChildWidget> providers;
+
   GOApp({
     super.key,
     this.debugMode = false,
     this.home,
-    required this.api,
+    this.api,
     this.primaryColor = Colors.blue,
     this.authApi,
     this.subscribers = const [],
+    this.providers = const [],
     GOChannel? channel,
     GONavigator? navigator,
     ThemeData? theme,
@@ -88,11 +93,12 @@ class _GOAppState extends State<GOApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<GOChannel>.value(value: widget.channel),
-        Provider<GONavigator>.value(value: widget.navigator),
-        Provider<GOAPI>.value(value: widget.api),
-        Provider<GOSecureStorage>.value(value: widget.storage),
-        if (widget.authApi != null) Provider<GOAuthAPI>.value(value: widget.authApi!),
+        Provider<GOChannel>(lazy: false, create: (c) => widget.channel),
+        Provider<GONavigator>(lazy: false, create: (c) => widget.navigator),
+        if (widget.api != null) Provider<GOAPI>(lazy: false, create: (c) => widget.api!),
+        Provider<GOSecureStorage>(lazy: false, create: (c) => widget.storage),
+        if (widget.authApi != null) Provider<GOAuthAPI>(lazy: false, create: (c) => widget.authApi!),
+        ...widget.providers
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: widget.debugMode,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import "package:gabinandobin_app_toolkit/gabinandobin_app_toolkit.dart";
 
 abstract class GOAPI {
   String get baseUrl;
@@ -18,10 +19,6 @@ abstract class GOAPI {
   GOAPICommand head(String path);
 
   Future<void> alert(http.Response response);
-}
-
-abstract class GOAuthAPI {
-  Future<String> refresh(String refreshToken);
 }
 
 typedef GOAPIMiddleware = Future<http.Response> Function(http.Response response);
@@ -50,4 +47,8 @@ extension GOResponseExtension on http.Response {
   bool get hasException => !isOk;
 
   dynamic json() => jsonDecode(utf8.decode(bodyBytes));
+
+  alert() {
+    GO.api.alert(this);
+  }
 }

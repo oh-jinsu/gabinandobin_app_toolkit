@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gabinandobin_app_toolkit/api.dart';
+import 'package:gabinandobin_app_toolkit/auth_api.dart';
 import 'package:gabinandobin_app_toolkit/channel.dart';
 import 'package:gabinandobin_app_toolkit/initializer.dart';
 import 'package:gabinandobin_app_toolkit/login_strategy/abstract.dart';

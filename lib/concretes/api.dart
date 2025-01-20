@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:gabinandobin_app_toolkit/api.dart';
+import 'package:gabinandobin_app_toolkit/auth_api.dart';
 import 'package:gabinandobin_app_toolkit/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -191,7 +192,11 @@ class GODefaultAPICommand implements GOAPICommand {
 
   @override
   Future<http.Response> request() async {
-    return middleware(await _request());
+    final response = await middleware(await _request());
+
+    GO.trace("API Response: ${response.statusCode}");
+
+    return response;
   }
 
   Future<http.Response> _request() async {
