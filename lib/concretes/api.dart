@@ -19,10 +19,10 @@ class GODefaultAPI implements GOAPI {
   Future<void> alert(http.Response response) async {
     final body = utf8.decode(response.bodyBytes);
 
-    GO.trace("API Error: ${response.statusCode} $body");
+    GO.log("API Error: ${response.statusCode} $body");
 
     if (response.statusCode >= 500) {
-      return GO.alert(title: "서버 오류", message: "서버에서 오류가 발생했습니다.");
+      return GO.dialog.alert(title: "서버 오류", message: "서버에서 오류가 발생했습니다.");
     }
 
     final message = (() {
@@ -35,7 +35,7 @@ class GODefaultAPI implements GOAPI {
       }
     })();
 
-    return GO.alert(title: "${response.statusCode}", message: message);
+    return GO.dialog.alert(title: "${response.statusCode}", message: message);
   }
 
   @override
@@ -192,16 +192,18 @@ class GODefaultAPICommand implements GOAPICommand {
 
   @override
   Future<http.Response> request() async {
-    final response = await middleware(await _request());
+    final id = {}.hashCode;
 
-    GO.trace("API Response: ${response.statusCode}");
+    GO.log("$method ${uri.replace(queryParameters: queryParameters)} ($id)");
 
-    return response;
+    final response = await _request();
+
+    GO.log("${response.statusCode} ${uri.replace(queryParameters: queryParameters)} ($id)");
+
+    return middleware(response);
   }
 
   Future<http.Response> _request() async {
-    GO.trace("$method ${uri.replace(queryParameters: queryParameters)} $headers");
-
     switch (method) {
       case "GET":
         return http.get(uri.replace(queryParameters: queryParameters), headers: headers);

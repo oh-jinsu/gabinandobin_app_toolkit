@@ -1,110 +1,91 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:gabinandobin_app_toolkit/api.dart';
 import 'package:gabinandobin_app_toolkit/auth_api.dart';
+import 'package:gabinandobin_app_toolkit/bootstrapper.dart';
 import 'package:gabinandobin_app_toolkit/channel.dart';
+import 'package:gabinandobin_app_toolkit/concretes/api.dart';
 import 'package:gabinandobin_app_toolkit/concretes/channel.dart';
+import 'package:gabinandobin_app_toolkit/concretes/dialog.dart';
 import 'package:gabinandobin_app_toolkit/concretes/navigator.dart';
 import 'package:gabinandobin_app_toolkit/concretes/secure_storage.dart';
+import 'package:gabinandobin_app_toolkit/config.dart';
+import 'package:gabinandobin_app_toolkit/controller.dart';
+import 'package:gabinandobin_app_toolkit/dialog.dart';
 import 'package:gabinandobin_app_toolkit/event.dart';
-import 'package:gabinandobin_app_toolkit/provider.dart';
+import 'package:gabinandobin_app_toolkit/initializer.dart';
 import 'package:gabinandobin_app_toolkit/navigator.dart';
+import 'package:gabinandobin_app_toolkit/provider.dart';
 import 'package:gabinandobin_app_toolkit/storage.dart';
 import 'package:gabinandobin_app_toolkit/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-class GOApp extends StatefulWidget {
-  final bool debugMode;
+class GOMaterialApp extends StatefulWidget {
+  final GOConfig config;
 
-  final Color primaryColor;
-
-  final Widget? home;
-
-  final GONavigator navigator;
-
-  final GOSecureStorage storage;
-
-  final GOChannel channel;
-
-  final ThemeData theme;
-
-  final GOAPI? api;
-
-  final GOAuthAPI? authApi;
-
-  final List<GOSubscriber> subscribers;
-
-  final List<SingleChildWidget> providers;
-
-  GOApp({
+  GOMaterialApp({
     super.key,
-    this.debugMode = false,
-    this.home,
-    this.api,
-    this.primaryColor = Colors.blue,
-    this.authApi,
-    this.subscribers = const [],
-    this.providers = const [],
+    bool debugMode = false,
+    Widget? home,
+    Color primaryColor = Colors.blue,
+    Color backgroundColor = Colors.white,
+    String? apiOrigin,
+    String? cdnOrigin,
+    GOAPI? api,
+    GOAuthAPI? authAPI,
+    GOBootstrapper? bootstrapper,
+    GOInitializer? initializer,
+    List<SingleChildWidget> providers = const [],
     GOChannel? channel,
     GONavigator? navigator,
-    ThemeData? theme,
+    GOTheme? theme,
     GOSecureStorage? secureStorage,
-  })  : channel = channel ?? GODefaultChannel(),
-        navigator = navigator ?? GODefaultNavigator(),
-        storage = secureStorage ?? GODefaultSecureStorage(),
-        theme = theme ?? createTheme(primaryColor: primaryColor) {
-    GO.debugMode = debugMode;
-  }
+    GODialog? dialog,
+  }) : config = GOConfig(
+          debugMode: debugMode,
+          home: home,
+          primaryColor: primaryColor,
+          cdnOrigin: cdnOrigin,
+          api: api ?? (apiOrigin != null ? GODefaultAPI(baseUrl: apiOrigin) : null),
+          authAPI: authAPI,
+          bootstrapper: bootstrapper,
+          initializer: initializer,
+          providers: providers,
+          channel: channel ?? GODefaultChannel(),
+          navigator: navigator ?? GODefaultNavigator(),
+          theme: theme ?? GOTheme(primaryColor: primaryColor, backgroundColor: backgroundColor),
+          secureStorage: secureStorage ?? GODefaultSecureStorage(),
+          dialog: dialog ?? GODefaultDialog(),
+        );
 
   @override
-  State<GOApp> createState() => _GOAppState();
+  State<GOMaterialApp> createState() => _GOMaterialAppState();
 }
 
-class _GOAppState extends State<GOApp> {
-  final List<StreamSubscription> _subscriptions = [];
-
-  @override
-  void initState() {
-    for (final subscriber in widget.subscribers) {
-      final subscription = widget.channel.stream.listen(subscriber.onListen);
-
-      _subscriptions.add(subscription);
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.channel.dispatch(const GOAppReadyEvent());
-    });
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    for (final subscription in _subscriptions) {
-      subscription.cancel();
-    }
-
-    super.dispose();
-  }
-
+class _GOMaterialAppState extends State<GOMaterialApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<GOChannel>(lazy: false, create: (c) => widget.channel),
-        Provider<GONavigator>(lazy: false, create: (c) => widget.navigator),
-        if (widget.api != null) Provider<GOAPI>(lazy: false, create: (c) => widget.api!),
-        Provider<GOSecureStorage>(lazy: false, create: (c) => widget.storage),
-        if (widget.authApi != null) Provider<GOAuthAPI>(lazy: false, create: (c) => widget.authApi!),
-        ...widget.providers
+        Provider<GOConfig>(lazy: false, create: (c) => widget.config),
+        Provider<GOChannel>(lazy: false, create: (c) => widget.config.channel),
+        Provider<GONavigator>(lazy: false, create: (c) => widget.config.navigator),
+        Provider<GOSecureStorage>(lazy: false, create: (c) => widget.config.secureStorage),
+        if (widget.config.bootstrapper != null)
+          GOControllerProvider<GOBootstrapper>(controller: widget.config.bootstrapper!),
+        if (widget.config.initializer != null)
+          GOControllerProvider<GOInitializer>(controller: widget.config.initializer!),
+        if (widget.config.api != null) Provider<GOAPI>(lazy: false, create: (c) => widget.config.api!),
+        if (widget.config.authAPI != null) Provider<GOAuthAPI>(lazy: false, create: (c) => widget.config.authAPI!),
+        ...widget.config.providers
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: widget.debugMode,
+        debugShowCheckedModeBanner: widget.config.debugMode,
         navigatorKey: GO.navigatorKey,
-        home: widget.home ?? const GOInitialPage(),
-        theme: widget.theme,
+        home: widget.config.bootstrapper == null && widget.config.initializer == null
+            ? widget.config.home
+            : const GOInitialPage(),
+        theme: widget.config.theme.createThemeData(),
       ),
     );
   }
@@ -118,6 +99,17 @@ class GOInitialPage extends StatefulWidget {
 }
 
 class _GOInitialPageState extends State<GOInitialPage> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      GO.dispatch(const GOAppReadyEvent());
+
+      GO.log("App ready");
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return const Scaffold();

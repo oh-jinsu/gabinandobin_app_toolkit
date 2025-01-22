@@ -6,6 +6,8 @@ import 'package:gabinandobin_app_toolkit/provider.dart';
 import 'package:provider/provider.dart';
 
 abstract class GOController extends ChangeNotifier implements GOSubscriber {
+  late BuildContext context;
+
   final List<StreamSubscription> _subscriptions = [];
 
   @protected
@@ -39,8 +41,11 @@ class GOControllerProvider<T extends GOController> extends ChangeNotifierProvide
     this.child,
   }) : super(
           lazy: false,
-          create: (_) {
+          create: (context) {
+            controller.context = context;
+
             WidgetsBinding.instance.addPostFrameCallback((_) {
+              GO.log("Creating controller...$T");
               controller.init();
             });
 

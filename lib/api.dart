@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:gabinandobin_app_toolkit/provider.dart';
 import 'package:http/http.dart' as http;
-import "package:gabinandobin_app_toolkit/gabinandobin_app_toolkit.dart";
 
 abstract class GOAPI {
   String get baseUrl;

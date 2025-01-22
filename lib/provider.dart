@@ -1,9 +1,14 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gabinandobin_app_toolkit/api.dart';
 import 'package:gabinandobin_app_toolkit/channel.dart';
+import 'package:gabinandobin_app_toolkit/config.dart';
+import 'package:gabinandobin_app_toolkit/dialog.dart';
 import 'package:gabinandobin_app_toolkit/navigator.dart';
 import 'package:gabinandobin_app_toolkit/storage.dart';
+import 'package:gabinandobin_app_toolkit/theme.dart';
 import 'package:provider/provider.dart';
 
 class GO {
@@ -29,71 +34,47 @@ class GO {
     return of<T?>(context);
   }
 
-  static bool debugMode = false;
+  static GOConfig get config => require<GOConfig>();
 
-  static GOChannel get channel => require<GOChannel>();
+  static bool get debugMode => config.debugMode;
+
+  static GOTheme get theme => config.theme;
+
+  static GODialog get dialog => config.dialog;
+
+  static GOChannel get channel => config.channel;
+
+  static GONavigator get navigator => config.navigator;
+
+  static GOSecureStorage get secureStorage => config.secureStorage;
 
   static GOAPI get api => require<GOAPI>();
 
-  static GONavigator get navigator => require<GONavigator>();
+  static Future<T?> goTo<T>(Widget page, {bool? immediate}) {
+    return navigator.goTo<T>(page, immediate: immediate);
+  }
 
-  static GOSecureStorage get secureStorage => require<GOSecureStorage>();
+  static Future<T?> replaceTo<T, TO>(Widget page, {bool? immediate}) {
+    return navigator.replaceTo<T, TO>(page, immediate: immediate);
+  }
+
+  static Future<T?> removeTo<T>(Widget page, {bool? immediate}) {
+    return navigator.removeTo<T>(page, immediate: immediate);
+  }
+
+  static void pop<T>([T? result]) {
+    return navigator.pop<T>(result);
+  }
 
   static dispatch(dynamic event) {
     channel.dispatch(event);
   }
 
-  static trace(Object? object) {
+  static log(Object? object) {
+    final timestamp = DateTime.now().toIso8601String().split("T").last;
+
     if (kDebugMode) {
-      print(object);
+      developer.log("[$timestamp] $object");
     }
-  }
-
-  static Future<void> alert({required String title, required String message}) async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("확인"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  static Future<bool> confirm({String title = "확인", required String message}) async {
-    final result = await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text("취소"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text("확인"),
-            ),
-          ],
-        );
-      },
-    );
-
-    return result == true;
   }
 }
