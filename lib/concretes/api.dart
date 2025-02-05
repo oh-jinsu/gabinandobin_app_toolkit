@@ -212,7 +212,7 @@ class GODefaultAPICommand implements GOAPICommand {
       case "PUT":
         return http.put(uri.replace(queryParameters: queryParameters), headers: headers, body: _body);
       case "DELETE":
-        return http.delete(uri.replace(queryParameters: queryParameters), headers: headers);
+        return http.delete(uri.replace(queryParameters: queryParameters), headers: headers, body: _body);
       case "PATCH":
         return http.patch(uri.replace(queryParameters: queryParameters), headers: headers, body: _body);
       case "HEAD":

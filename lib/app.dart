@@ -29,6 +29,8 @@ class GOMaterialApp extends StatefulWidget {
     Widget? home,
     Color primaryColor = Colors.blue,
     Color backgroundColor = Colors.white,
+    Color linkColor = Colors.blue,
+    double fontSize = 16.0,
     String? apiOrigin,
     String? cdnOrigin,
     GOAPI? api,
@@ -44,7 +46,6 @@ class GOMaterialApp extends StatefulWidget {
   }) : config = GOConfig(
           debugMode: debugMode,
           home: home,
-          primaryColor: primaryColor,
           cdnOrigin: cdnOrigin,
           api: api ?? (apiOrigin != null ? GODefaultAPI(baseUrl: apiOrigin) : null),
           authAPI: authAPI,
@@ -53,7 +54,13 @@ class GOMaterialApp extends StatefulWidget {
           providers: providers,
           channel: channel ?? GODefaultChannel(),
           navigator: navigator ?? GODefaultNavigator(),
-          theme: theme ?? GOTheme(primaryColor: primaryColor, backgroundColor: backgroundColor),
+          theme: theme ??
+              GOTheme(
+                primaryColor: primaryColor,
+                backgroundColor: backgroundColor,
+                linkColor: linkColor,
+                fontSize: fontSize,
+              ),
           secureStorage: secureStorage ?? GODefaultSecureStorage(),
           dialog: dialog ?? GODefaultDialog(),
         );

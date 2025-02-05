@@ -8,6 +8,6 @@ class GODefaultInitializer extends GOInitializer {
 
   @override
   void finish() {
-    GO.navigator.goTo(home, immediate: true);
+    GO.navigator.removeTo(home, immediate: true);
   }
 }

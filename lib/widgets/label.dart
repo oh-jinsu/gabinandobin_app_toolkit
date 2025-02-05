@@ -17,7 +17,6 @@ class GOLabel extends StatelessWidget {
             text,
             style: const TextStyle(
               color: Colors.black,
-              fontSize: 14.0,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -26,7 +25,6 @@ class GOLabel extends StatelessWidget {
               '*',
               style: TextStyle(
                 color: Colors.red,
-                fontSize: 14.0,
                 fontWeight: FontWeight.bold,
               ),
             ),

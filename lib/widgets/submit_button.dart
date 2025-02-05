@@ -28,6 +28,8 @@ class GOSubmitButton extends StatelessWidget {
 
   final bool outlined;
 
+  final double height;
+
   const GOSubmitButton({
     super.key,
     this.safeArea = false,
@@ -43,6 +45,7 @@ class GOSubmitButton extends StatelessWidget {
     required this.onPressed,
     required this.child,
     this.outlined = false,
+    this.height = 48.0,
   });
 
   @override
@@ -61,22 +64,22 @@ class GOSubmitButton extends StatelessWidget {
           onPressed();
         },
         style: ElevatedButton.styleFrom(
-          minimumSize: minimumSize ?? const Size(double.infinity, 48.0),
+          minimumSize: minimumSize ?? Size(double.infinity, height),
           backgroundColor: outlined
               ? Colors.white
               : enabled
                   ? backgroundColor
                   : disabledBackgroundColor ?? Colors.grey[400],
-          shape: outlined
-              ? RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  side: BorderSide(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
+            side: outlined
+                ? BorderSide(
                     color: enabled
                         ? foregroundColor ?? GO.theme.primaryColor
                         : disabledBackgroundColor ?? Colors.grey[400]!,
-                  ),
-                )
-              : null,
+                  )
+                : BorderSide.none,
+          ),
           foregroundColor: outlined ? (foregroundColor ?? GO.theme.primaryColor) : Colors.white,
         ),
         child: isPending

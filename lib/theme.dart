@@ -5,23 +5,33 @@ class GOTheme {
 
   final Color backgroundColor;
 
+  final Color linkColor;
+
+  final Color dividerColor;
+
+  final double fontSize;
+
   const GOTheme({
     required this.primaryColor,
+    required this.fontSize,
     this.backgroundColor = Colors.white,
+    this.linkColor = Colors.blue,
+    this.dividerColor = const Color(0xffe5e7eb),
   });
 
   ThemeData createThemeData() {
     return ThemeData(
+      primaryColor: primaryColor,
       cardColor: backgroundColor,
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        surface: backgroundColor,
+        primary: primaryColor,
+      ),
+      dividerColor: dividerColor,
       appBarTheme: AppBarTheme(
         backgroundColor: backgroundColor,
         scrolledUnderElevation: 0.0,
         centerTitle: false,
-      ),
-      primaryColor: primaryColor,
-      colorScheme: ColorScheme.fromSwatch().copyWith(
-        surface: backgroundColor,
-        primary: primaryColor,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -66,9 +76,9 @@ class GOTheme {
         elevation: 4.0,
         backgroundColor: primaryColor,
       ),
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         bodyMedium: TextStyle(
-          fontSize: 16.0,
+          fontSize: fontSize,
           fontWeight: FontWeight.normal,
         ),
       ),

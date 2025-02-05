@@ -9,6 +9,7 @@ import 'package:gabinandobin_app_toolkit/dialog.dart';
 import 'package:gabinandobin_app_toolkit/navigator.dart';
 import 'package:gabinandobin_app_toolkit/storage.dart';
 import 'package:gabinandobin_app_toolkit/theme.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 class GO {
@@ -49,6 +50,8 @@ class GO {
   static GOSecureStorage get secureStorage => config.secureStorage;
 
   static GOAPI get api => require<GOAPI>();
+
+  static Future<PackageInfo> getInfo() => PackageInfo.fromPlatform();
 
   static Future<T?> goTo<T>(Widget page, {bool? immediate}) {
     return navigator.goTo<T>(page, immediate: immediate);

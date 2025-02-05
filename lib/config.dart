@@ -13,8 +13,6 @@ import 'package:provider/single_child_widget.dart';
 class GOConfig {
   final bool debugMode;
 
-  final Color primaryColor;
-
   final Widget? home;
 
   final GOBootstrapper? bootstrapper;
@@ -41,7 +39,6 @@ class GOConfig {
 
   const GOConfig({
     required this.debugMode,
-    required this.primaryColor,
     required this.home,
     required this.bootstrapper,
     required this.initializer,

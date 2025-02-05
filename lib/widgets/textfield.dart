@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gabinandobin_app_toolkit/gabinandobin_app_toolkit.dart';
 
 class GOTextField extends StatelessWidget {
   final TextEditingController? controller;
@@ -28,6 +29,8 @@ class GOTextField extends StatelessWidget {
 
   final List<TextInputFormatter>? inputFormatters;
 
+  final EdgeInsets? contentPadding;
+
   const GOTextField({
     super.key,
     this.controller,
@@ -43,6 +46,7 @@ class GOTextField extends StatelessWidget {
     this.focusNode,
     this.onFieldSubmitted,
     this.inputFormatters,
+    this.contentPadding,
   });
 
   @override
@@ -53,8 +57,8 @@ class GOTextField extends StatelessWidget {
         inputFormatters: inputFormatters,
         focusNode: focusNode,
         controller: controller,
-        style: const TextStyle(
-          fontSize: 16.0,
+        style: TextStyle(
+          fontSize: GO.theme.fontSize,
         ),
         scrollPadding: const EdgeInsets.symmetric(vertical: 0.0),
         keyboardType: keyboardType,
@@ -64,27 +68,28 @@ class GOTextField extends StatelessWidget {
         maxLines: maxLines,
         obscureText: obscureText,
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+          isDense: true,
+          contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
           hintText: hintText,
           hintStyle: const TextStyle(
             color: Colors.grey,
           ),
           border: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(4.0),
           ),
           filled: true,
           fillColor: Colors.grey[50],
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(4.0),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(4.0),
           ),
         ),
-        cursorColor: Theme.of(context).colorScheme.primary,
+        cursorColor: GO.theme.primaryColor,
         onChanged: onChanged,
         onFieldSubmitted: onFieldSubmitted,
       ),
