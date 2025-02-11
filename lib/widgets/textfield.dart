@@ -31,6 +31,14 @@ class GOTextField extends StatelessWidget {
 
   final EdgeInsets? contentPadding;
 
+  final InputBorder? border;
+
+  final BorderRadius? borderRadius;
+
+  final Color? backgroundColor;
+
+  final double? fontSize;
+
   const GOTextField({
     super.key,
     this.controller,
@@ -47,10 +55,20 @@ class GOTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.inputFormatters,
     this.contentPadding,
+    this.border,
+    this.backgroundColor,
+    this.borderRadius,
+    this.fontSize,
   });
 
   @override
   Widget build(BuildContext context) {
+    final border = this.border ??
+        OutlineInputBorder(
+          borderSide: BorderSide(color: GO.theme.dividerColor),
+          borderRadius: this.borderRadius ?? BorderRadius.circular(4.0),
+        );
+
     return Padding(
       padding: EdgeInsets.only(bottom: bottomPadding),
       child: TextFormField(
@@ -58,7 +76,7 @@ class GOTextField extends StatelessWidget {
         focusNode: focusNode,
         controller: controller,
         style: TextStyle(
-          fontSize: GO.theme.fontSize,
+          fontSize: fontSize ?? GO.theme.fontSize,
         ),
         scrollPadding: const EdgeInsets.symmetric(vertical: 0.0),
         keyboardType: keyboardType,
@@ -74,20 +92,11 @@ class GOTextField extends StatelessWidget {
           hintStyle: const TextStyle(
             color: Colors.grey,
           ),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(4.0),
-          ),
+          border: border,
           filled: true,
-          fillColor: Colors.grey[50],
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(4.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(4.0),
-          ),
+          fillColor: backgroundColor ?? Colors.grey[50],
+          enabledBorder: border,
+          focusedBorder: border,
         ),
         cursorColor: GO.theme.primaryColor,
         onChanged: onChanged,

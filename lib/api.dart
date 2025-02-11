@@ -46,7 +46,7 @@ extension GOResponseExtension on http.Response {
 
   bool get hasException => !isOk;
 
-  dynamic json() => jsonDecode(utf8.decode(bodyBytes));
+  T json<T>() => jsonDecode(utf8.decode(bodyBytes)) as T;
 
   alert() {
     GO.api.alert(this);

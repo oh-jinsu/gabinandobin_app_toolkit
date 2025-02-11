@@ -1,7 +1,33 @@
 import 'package:intl/intl.dart';
 
+String formatDateString(String date) {
+  return formatDateTime(DateTime.parse(date).toLocal());
+}
+
+String formatDateTime(DateTime date) {
+  return DateFormat('yyyy.MM.dd a hh:mm').format(date).replaceAll('PM', '오후').replaceAll('AM', '오전');
+}
+
+String formatTime(DateTime date) {
+  return DateFormat('a hh:mm').format(date).replaceAll('PM', '오후').replaceAll('AM', '오전');
+}
+
 String formatSimpleDate(DateTime date) {
   return DateFormat("yyyy. MM. dd.").format(date);
+}
+
+String formatSimpleDateTime(DateTime date) {
+  final now = DateTime.now();
+
+  if (now.year != date.year) {
+    return DateFormat("yyyy년 M월 d일").format(date);
+  }
+
+  if (now.month != date.month || now.day != date.day) {
+    return DateFormat("M월 d일").format(date);
+  }
+
+  return DateFormat("a h:mm").format(date).replaceAll('PM', '오후').replaceAll('AM', '오전');
 }
 
 String formatHumanDate(DateTime date) {
