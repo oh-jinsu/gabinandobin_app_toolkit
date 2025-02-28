@@ -29,13 +29,17 @@ class GOConfig {
 
   final GOChannel channel;
 
-  final GOTheme theme;
+  final GOThemeData theme;
 
   final String? cdnOrigin;
 
   final List<SingleChildWidget> providers;
 
   final GODialog dialog;
+
+  final Locale? locale;
+
+  final Iterable<Locale> supportedLocales;
 
   const GOConfig({
     required this.debugMode,
@@ -51,5 +55,7 @@ class GOConfig {
     required this.cdnOrigin,
     required this.providers,
     required this.dialog,
+    required this.locale,
+    required this.supportedLocales,
   });
 }

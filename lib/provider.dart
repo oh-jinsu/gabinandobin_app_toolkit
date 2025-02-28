@@ -39,7 +39,7 @@ class GO {
 
   static bool get debugMode => config.debugMode;
 
-  static GOTheme get theme => config.theme;
+  static GOThemeController get theme => require<GOThemeController>();
 
   static GODialog get dialog => config.dialog;
 

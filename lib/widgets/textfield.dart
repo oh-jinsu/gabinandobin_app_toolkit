@@ -47,7 +47,7 @@ class GOTextField extends StatelessWidget {
     this.readOnly = false,
     this.onChanged,
     this.minLines,
-    this.maxLines,
+    this.maxLines = 1,
     this.obscureText = false,
     this.hintText,
     this.bottomPadding = 16.0,

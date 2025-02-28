@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class LazyCircularProgressBar extends StatefulWidget {
   final Duration duration;
 
-  const LazyCircularProgressBar({super.key, this.duration = const Duration(milliseconds: 500)});
+  const LazyCircularProgressBar({super.key, this.duration = const Duration(milliseconds: 100)});
 
   @override
   State<LazyCircularProgressBar> createState() => _LazyCircularProgressBarState();

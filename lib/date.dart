@@ -40,7 +40,7 @@ String formatHumanDate(DateTime date) {
   }
 
   if (diff.inDays > 6) {
-    return DateFormat("M월 D일").format(date);
+    return DateFormat("M월 d일").format(date);
   }
 
   if (diff.inDays == 1) {

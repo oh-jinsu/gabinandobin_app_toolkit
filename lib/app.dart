@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gabinandobin_app_toolkit/api.dart';
 import 'package:gabinandobin_app_toolkit/auth_api.dart';
@@ -23,13 +24,18 @@ import 'package:provider/single_child_widget.dart';
 class GOMaterialApp extends StatefulWidget {
   final GOConfig config;
 
+  final GOThemeMode _initialThemeMode;
+
   GOMaterialApp({
     super.key,
+    GOThemeMode initialThemeMode = GOThemeMode.light,
     bool debugMode = false,
     Widget? home,
     Color primaryColor = Colors.blue,
     Color backgroundColor = Colors.white,
     Color linkColor = Colors.blue,
+    GOColorScheme? lightColorScheme,
+    GOColorScheme? darkColorScheme,
     double fontSize = 16.0,
     String? apiOrigin,
     String? cdnOrigin,
@@ -40,10 +46,13 @@ class GOMaterialApp extends StatefulWidget {
     List<SingleChildWidget> providers = const [],
     GOChannel? channel,
     GONavigator? navigator,
-    GOTheme? theme,
+    GOThemeData? theme,
     GOSecureStorage? secureStorage,
     GODialog? dialog,
-  }) : config = GOConfig(
+    Locale? locale,
+    Iterable<Locale> supportedLocales = const <Locale>[Locale('en', 'US')],
+  })  : _initialThemeMode = initialThemeMode,
+        config = GOConfig(
           debugMode: debugMode,
           home: home,
           cdnOrigin: cdnOrigin,
@@ -55,14 +64,25 @@ class GOMaterialApp extends StatefulWidget {
           channel: channel ?? GODefaultChannel(),
           navigator: navigator ?? GODefaultNavigator(),
           theme: theme ??
-              GOTheme(
-                primaryColor: primaryColor,
-                backgroundColor: backgroundColor,
-                linkColor: linkColor,
+              GOThemeData(
+                light: lightColorScheme ??
+                    GOColorScheme.light(
+                      primaryColor: primaryColor,
+                      backgroundColor: backgroundColor,
+                      linkColor: linkColor,
+                    ),
+                dark: darkColorScheme ??
+                    GOColorScheme.dark(
+                      primaryColor: primaryColor,
+                      backgroundColor: backgroundColor,
+                      linkColor: linkColor,
+                    ),
                 fontSize: fontSize,
               ),
           secureStorage: secureStorage ?? GODefaultSecureStorage(),
           dialog: dialog ?? GODefaultDialog(),
+          locale: locale,
+          supportedLocales: supportedLocales,
         );
 
   @override
@@ -78,6 +98,12 @@ class _GOMaterialAppState extends State<GOMaterialApp> {
         Provider<GOChannel>(lazy: false, create: (c) => widget.config.channel),
         Provider<GONavigator>(lazy: false, create: (c) => widget.config.navigator),
         Provider<GOSecureStorage>(lazy: false, create: (c) => widget.config.secureStorage),
+        GOControllerProvider<GOThemeController>(
+          controller: GOThemeController(
+            data: widget.config.theme,
+            mode: widget._initialThemeMode,
+          ),
+        ),
         if (widget.config.bootstrapper != null)
           GOControllerProvider<GOBootstrapper>(controller: widget.config.bootstrapper!),
         if (widget.config.initializer != null)
@@ -86,13 +112,24 @@ class _GOMaterialAppState extends State<GOMaterialApp> {
         if (widget.config.authAPI != null) Provider<GOAuthAPI>(lazy: false, create: (c) => widget.config.authAPI!),
         ...widget.config.providers
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: widget.config.debugMode,
-        navigatorKey: GO.navigatorKey,
-        home: widget.config.bootstrapper == null && widget.config.initializer == null
-            ? widget.config.home
-            : const GOInitialPage(),
-        theme: widget.config.theme.createThemeData(),
+      child: Consumer<GOThemeController>(
+        builder: (context, themeController, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: widget.config.debugMode,
+            navigatorKey: GO.navigatorKey,
+            home: widget.config.bootstrapper == null && widget.config.initializer == null
+                ? widget.config.home
+                : const GOInitialPage(),
+            theme: themeController.generateThemeData(),
+            locale: widget.config.locale,
+            supportedLocales: widget.config.supportedLocales,
+            localizationsDelegates: const [
+              DefaultMaterialLocalizations.delegate,
+              DefaultWidgetsLocalizations.delegate,
+              DefaultCupertinoLocalizations.delegate,
+            ],
+          );
+        },
       ),
     );
   }
